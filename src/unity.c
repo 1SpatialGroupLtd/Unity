@@ -8,7 +8,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; UNITY_OUTPUT_CHAR('\n'); longjmp(Unity.AbortFrame, 1); }
+//#define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; UNITY_OUTPUT_CHAR('\n'); longjmp(Unity.AbortFrame, 1); }
+#define UNITY_FAIL_AND_BAIL   { Unity.CurrentTestFailed  = 1; UNITY_OUTPUT_CHAR('\n'); }
 #define UNITY_IGNORE_AND_BAIL { Unity.CurrentTestIgnored = 1; UNITY_OUTPUT_CHAR('\n'); longjmp(Unity.AbortFrame, 1); }
 /// return prematurely if we are already in failure or ignore state
 #define UNITY_SKIP_EXECUTION  { if ((Unity.CurrentTestFailed != 0) || (Unity.CurrentTestIgnored != 0)) {return;} }
@@ -238,18 +239,18 @@ void UnityPrintOk(void)
 void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 {
     UnityPrint(file);
-    UNITY_OUTPUT_CHAR(':');
+    UnityPrint("[ ");
     UnityPrintNumber(line);
     UNITY_OUTPUT_CHAR(':');
-    UnityPrint(Unity.CurrentTestName);
-    UNITY_OUTPUT_CHAR(':');
+    //UnityPrint(Unity.CurrentTestName);
+    //UNITY_OUTPUT_CHAR(':');
 }
 
 //-----------------------------------------------
 void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)
 {
     UnityTestResultsBegin(Unity.TestFile, line);
-    UnityPrint("FAIL:");
+    UnityPrint("FAIL ]");
 }
 
 //-----------------------------------------------
@@ -829,7 +830,7 @@ void UnityAssertEqualStringArray( const char** expected,
 }
 
 //-----------------------------------------------
-void UnityAssertEqualMemory( const void* expected,
+int UnityAssertEqualMemory( const void* expected,
                              const void* actual,
                              const _UU32 length,
                              const _UU32 num_elements,
@@ -841,18 +842,18 @@ void UnityAssertEqualMemory( const void* expected,
     _UU32 elements = num_elements;
     _UU32 bytes;
 
-    UNITY_SKIP_EXECUTION;
+    //UNITY_SKIP_EXECUTION;
   
     if ((elements == 0) || (length == 0))
     {
         UnityTestResultsFailBegin(lineNumber);
         UnityPrint(UnityStrPointless);
         UnityAddMsgIfSpecified(msg);
-        UNITY_FAIL_AND_BAIL;
+        //UNITY_FAIL_AND_BAIL;
     }
 
     if (UnityCheckArraysForNull((void*)expected, (void*)actual, lineNumber, msg) == 1)
-        return;
+        return 1;
         
     while (elements--)
     {
@@ -876,7 +877,9 @@ void UnityAssertEqualMemory( const void* expected,
                 UnityPrint(UnityStrWas);
                 UnityPrintNumberByStyle(*ptr_act, UNITY_DISPLAY_STYLE_HEX8);
                 UnityAddMsgIfSpecified(msg);
-                UNITY_FAIL_AND_BAIL;
+				UnityPrint("\r\n---      ---");
+                //UNITY_FAIL_AND_BAIL;
+				return 1;
             }
             ptr_exp += 1;
             ptr_act += 1;
@@ -884,6 +887,7 @@ void UnityAssertEqualMemory( const void* expected,
         /////////////////////////////////////
         
     }
+	return 0;
 }
 
 //-----------------------------------------------
@@ -892,17 +896,22 @@ void UnityAssertEqualMemory( const void* expected,
 
 void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
 {
+	Unity.CurrentTestFailed = 0;
     UNITY_SKIP_EXECUTION;
+	
 
-    UnityTestResultsBegin(Unity.TestFile, line);
-    UnityPrintFail();
+    //UnityTestResultsBegin(Unity.TestFile, line);
+    //UnityPrintFail();
     if (msg != NULL)
     {
-      UNITY_OUTPUT_CHAR(':');
+      //UNITY_OUTPUT_CHAR(':');
       if (msg[0] != ' ')
       {
-        UNITY_OUTPUT_CHAR(' ');  
+        //UNITY_OUTPUT_CHAR(' ');  
       }
+	  UnityTestResultsFailBegin(line);
+	  UnityPrint("   ");
+	  //UnityPrint("[  FAILED  ] ");
       UnityPrint(msg);
     }
     UNITY_FAIL_AND_BAIL;
@@ -925,8 +934,8 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
 }
 
 //-----------------------------------------------
-void setUp(void);
-void tearDown(void);
+void set_Up();
+void tear_Down();
 void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int FuncLineNum)
 {
     Unity.CurrentTestName = FuncName;
@@ -934,12 +943,12 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
     Unity.NumberOfTests++; 
     if (TEST_PROTECT())
     {
-        setUp();
+        //set_Up();
         Func();
     }
     if (TEST_PROTECT() && !(Unity.CurrentTestIgnored))
     {
-        tearDown();
+        //tear_Down();
     }
     UnityConcludeTest();
 }
