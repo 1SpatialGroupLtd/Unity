@@ -731,14 +731,14 @@ void UnityAssertNumbersWithin( const _U_SINT delta,
 }
 
 //-----------------------------------------------
-void UnityAssertEqualString(const char* expected,
+int UnityAssertEqualString(const char* expected,
                             const char* actual,
                             const char* msg,
                             const UNITY_LINE_TYPE lineNumber)
 {
     _UU32 i;
 
-    UNITY_SKIP_EXECUTION;
+    //UNITY_SKIP_EXECUTION;
   
     // if both pointers not null compare the strings
     if (expected && actual)
@@ -766,7 +766,9 @@ void UnityAssertEqualString(const char* expected,
       UnityPrintExpectedAndActualStrings(expected, actual);
       UnityAddMsgIfSpecified(msg);
       UNITY_FAIL_AND_BAIL;
+	  return 1;
     }
+	return 0;
 }
 
 //-----------------------------------------------
@@ -894,7 +896,32 @@ int UnityAssertEqualMemory( const void* expected,
 // Control Functions
 //-----------------------------------------------
 
-void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
+int UnityFail(const char* msg, const UNITY_LINE_TYPE line)
+{
+	Unity.CurrentTestFailed = 0;
+    //UNITY_SKIP_EXECUTION;
+	
+
+    //UnityTestResultsBegin(Unity.TestFile, line);
+    //UnityPrintFail();
+    if (msg != NULL)
+    {
+      //UNITY_OUTPUT_CHAR(':');
+      if (msg[0] != ' ')
+      {
+        //UNITY_OUTPUT_CHAR(' ');  
+      }
+	  UnityTestResultsFailBegin(line);
+	  UnityPrint("   ");
+	  //UnityPrint("[  FAILED  ] ");
+      UnityPrint(msg);
+    }
+    UNITY_FAIL_AND_BAIL;
+	return 1;
+}
+
+//-----------------------------------------------
+void UnityFailNoReturn(const char* msg, const UNITY_LINE_TYPE line)
 {
 	Unity.CurrentTestFailed = 0;
     UNITY_SKIP_EXECUTION;

@@ -369,7 +369,7 @@ void UnityAssertBits(const _U_SINT mask,
                      const char* msg,
                      const UNITY_LINE_TYPE lineNumber);
 
-void UnityAssertEqualString(const char* expected,
+int UnityAssertEqualString(const char* expected,
                             const char* actual,
                             const char* msg,
                             const UNITY_LINE_TYPE lineNumber);
@@ -394,7 +394,8 @@ void UnityAssertNumbersWithin(const _U_SINT delta,
                               const UNITY_LINE_TYPE lineNumber,
                               const UNITY_DISPLAY_STYLE_T style);
 
-void UnityFail(const char* message, const UNITY_LINE_TYPE line);
+int UnityFail(const char* message, const UNITY_LINE_TYPE line);
+void UnityFailNoReturn(const char* message, const UNITY_LINE_TYPE line);
 
 void UnityIgnore(const char* message, const UNITY_LINE_TYPE line);
 
@@ -431,15 +432,17 @@ void UnityAssertEqualDoubleArray(const _UD* expected,
 //-------------------------------------------------------
 
 #define UNITY_TEST_FAIL(line, message)   UnityFail(   (message), (UNITY_LINE_TYPE)line);
+#define UNITY_TEST_FAIL_NO_RETURN(line, message)   UnityFailNoReturn(   (message), (UNITY_LINE_TYPE)line);
 #define UNITY_TEST_IGNORE(line, message) UnityIgnore( (message), (UNITY_LINE_TYPE)line);
 
 //-------------------------------------------------------
 // Test Asserts
 //-------------------------------------------------------
 
-#define UNITY_TEST_ASSERT(condition, line, message)                                              if (condition) {} else {UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, message);}
-#define UNITY_TEST_ASSERT_NULL(pointer, line, message)                                           UNITY_TEST_ASSERT(((pointer) == NULL),  (UNITY_LINE_TYPE)line, message)
-#define UNITY_TEST_ASSERT_NOT_NULL(pointer, line, message)                                       UNITY_TEST_ASSERT(((pointer) != NULL),  (UNITY_LINE_TYPE)line, message)
+#define UNITY_TEST_ASSERT(condition, line, message)                                              if (condition) {} else {return UNITY_TEST_FAIL((UNITY_LINE_TYPE)line, message);}
+#define UNITY_TEST_ASSERT_NO_RETURN(condition, line, message)                                    if (condition) {} else {UNITY_TEST_FAIL_NO_RETURN((UNITY_LINE_TYPE)line, message);}
+#define UNITY_TEST_ASSERT_NULL(pointer, line, message)                                           UNITY_TEST_ASSERT_NO_RETURN(((pointer) == NULL),  (UNITY_LINE_TYPE)line, message)
+#define UNITY_TEST_ASSERT_NOT_NULL(pointer, line, message)                                       UNITY_TEST_ASSERT_NO_RETURN(((pointer) != NULL),  (UNITY_LINE_TYPE)line, message)
 
 #define UNITY_TEST_ASSERT_EQUAL_INT(expected, actual, line, message)                             UnityAssertEqualNumber((_U_SINT)(expected), (_U_SINT)(actual), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_INT)
 #define UNITY_TEST_ASSERT_EQUAL_INT8(expected, actual, line, message)                            UnityAssertEqualNumber((_U_SINT)(_US8 )(expected), (_U_SINT)(_US8 )(actual), (message), (UNITY_LINE_TYPE)line, UNITY_DISPLAY_STYLE_INT)
