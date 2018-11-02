@@ -31,7 +31,7 @@ const char* UnityStrNullPointerForExpected= " Expected pointer to be NULL";
 const char* UnityStrNullPointerForActual  = " Actual pointer was NULL";
 
 // compiler-generic print formatting masks
-const _U_UINT UnitySizeMask[] = 
+const _U_UINT UnitySizeMask[] =
 {
     255u,         // 0xFF
     65535u,       // 0xFFFF
@@ -297,7 +297,7 @@ void UnityPrintExpectedAndActualStrings(const char* expected, const char* actual
     }
     else
     {
-      UnityPrint(UnityStrNull);          
+      UnityPrint(UnityStrNull);
     }
     UnityPrint(UnityStrWas);
     if (actual != NULL)
@@ -308,7 +308,7 @@ void UnityPrintExpectedAndActualStrings(const char* expected, const char* actual
     }
     else
     {
-      UnityPrint(UnityStrNull);          
+      UnityPrint(UnityStrNull);
     }
 }
 
@@ -321,7 +321,7 @@ int UnityCheckArraysForNull(const void* expected, const void* actual, const UNIT
     //return true if they are both NULL
     if ((expected == NULL) && (actual == NULL))
         return 1;
-        
+
     //throw error if just expected is NULL
     if (expected == NULL)
     {
@@ -339,7 +339,7 @@ int UnityCheckArraysForNull(const void* expected, const void* actual, const UNIT
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
-    
+
     //return false if neither is NULL
     return 0;
 }
@@ -355,7 +355,7 @@ void UnityAssertBits(const _U_SINT mask,
                      const UNITY_LINE_TYPE lineNumber)
 {
     UNITY_SKIP_EXECUTION;
-  
+
     if ((mask & expected) != (mask & actual))
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -402,7 +402,7 @@ void UnityAssertEqualIntArray(const _U_SINT* expected,
     const _US8* ptr_act = (_US8*)actual;
 
     UNITY_SKIP_EXECUTION;
-  
+
     if (elements == 0)
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -410,7 +410,7 @@ void UnityAssertEqualIntArray(const _U_SINT* expected,
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
-    
+
     if (UnityCheckArraysForNull((void*)expected, (void*)actual, lineNumber, msg) == 1)
         return;
 
@@ -517,7 +517,7 @@ void UnityAssertEqualFloatArray(const _UF* expected,
     _UF diff, tol;
 
     UNITY_SKIP_EXECUTION;
-  
+
     if (elements == 0)
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -525,7 +525,7 @@ void UnityAssertEqualFloatArray(const _UF* expected,
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
-    
+
     if (UnityCheckArraysForNull((void*)expected, (void*)actual, lineNumber, msg) == 1)
         return;
 
@@ -533,10 +533,10 @@ void UnityAssertEqualFloatArray(const _UF* expected,
     {
         diff = *ptr_expected - *ptr_actual;
         if (diff < 0.0)
-          diff = 0.0 - diff;
+          diff = (_UF)0.0 - diff;
         tol = UNITY_FLOAT_PRECISION * *ptr_expected;
         if (tol < 0.0)
-            tol = 0.0 - tol;
+          tol = (_UF)0.0 - tol;
         if (diff > tol)
         {
             UnityTestResultsFailBegin(lineNumber);
@@ -569,7 +569,7 @@ void UnityAssertFloatsWithin(const _UF delta,
     _UF pos_delta = delta;
 
     UNITY_SKIP_EXECUTION;
-  
+
     if (diff < 0)
     {
         diff = 0.0f - diff;
@@ -611,7 +611,7 @@ void UnityAssertEqualDoubleArray(const _UD* expected,
     _UD diff, tol;
 
     UNITY_SKIP_EXECUTION;
-  
+
     if (elements == 0)
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -619,7 +619,7 @@ void UnityAssertEqualDoubleArray(const _UD* expected,
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
-    
+
     if (UnityCheckArraysForNull((void*)expected, (void*)actual, lineNumber, msg) == 1)
         return;
 
@@ -663,7 +663,7 @@ void UnityAssertDoublesWithin(const _UD delta,
     _UD pos_delta = delta;
 
     UNITY_SKIP_EXECUTION;
-  
+
     if (diff < 0)
     {
         diff = 0.0f - diff;
@@ -700,7 +700,7 @@ void UnityAssertNumbersWithin( const _U_SINT delta,
                                const UNITY_DISPLAY_STYLE_T style)
 {
     UNITY_SKIP_EXECUTION;
-    
+
     if ((style & UNITY_DISPLAY_RANGE_INT) == UNITY_DISPLAY_RANGE_INT)
     {
         if (actual > expected)
@@ -739,7 +739,7 @@ int UnityAssertEqualString(const char* expected,
     _UU32 i;
 
     //UNITY_SKIP_EXECUTION;
-  
+
     // if both pointers not null compare the strings
     if (expected && actual)
     {
@@ -779,9 +779,9 @@ void UnityAssertEqualStringArray( const char** expected,
                                   const UNITY_LINE_TYPE lineNumber)
 {
     _UU32 i, j = 0;
-    
+
     UNITY_SKIP_EXECUTION;
-  
+
     // if no elements, it's an error
     if (num_elements == 0)
     {
@@ -793,7 +793,7 @@ void UnityAssertEqualStringArray( const char** expected,
 
     if (UnityCheckArraysForNull((void*)expected, (void*)actual, lineNumber, msg) == 1)
         return;
-    
+
     do
     {
         // if both pointers not null compare the strings
@@ -827,7 +827,7 @@ void UnityAssertEqualStringArray( const char** expected,
             UnityPrintExpectedAndActualStrings((const char*)(expected[j]), (const char*)(actual[j]));
             UnityAddMsgIfSpecified(msg);
             UNITY_FAIL_AND_BAIL;
-        } 
+        }
     } while (++j < num_elements);
 }
 
@@ -845,7 +845,7 @@ int UnityAssertEqualMemory( const void* expected,
     _UU32 bytes;
 
     //UNITY_SKIP_EXECUTION;
-  
+
     if ((elements == 0) || (length == 0))
     {
         UnityTestResultsFailBegin(lineNumber);
@@ -856,7 +856,7 @@ int UnityAssertEqualMemory( const void* expected,
 
     if (UnityCheckArraysForNull((void*)expected, (void*)actual, lineNumber, msg) == 1)
         return 1;
-        
+
     while (elements--)
     {
         /////////////////////////////////////
@@ -887,7 +887,7 @@ int UnityAssertEqualMemory( const void* expected,
             ptr_act += 1;
         }
         /////////////////////////////////////
-        
+
     }
 	return 0;
 }
@@ -900,7 +900,7 @@ int UnityFail(const char* msg, const UNITY_LINE_TYPE line)
 {
 	Unity.CurrentTestFailed = 0;
     //UNITY_SKIP_EXECUTION;
-	
+
 
     //UnityTestResultsBegin(Unity.TestFile, line);
     //UnityPrintFail();
@@ -909,7 +909,7 @@ int UnityFail(const char* msg, const UNITY_LINE_TYPE line)
       //UNITY_OUTPUT_CHAR(':');
       if (msg[0] != ' ')
       {
-        //UNITY_OUTPUT_CHAR(' ');  
+        //UNITY_OUTPUT_CHAR(' ');
       }
 	  UnityTestResultsFailBegin(line);
 	  UnityPrint("   ");
@@ -925,7 +925,7 @@ void UnityFailNoReturn(const char* msg, const UNITY_LINE_TYPE line)
 {
 	Unity.CurrentTestFailed = 0;
     UNITY_SKIP_EXECUTION;
-	
+
 
     //UnityTestResultsBegin(Unity.TestFile, line);
     //UnityPrintFail();
@@ -934,7 +934,7 @@ void UnityFailNoReturn(const char* msg, const UNITY_LINE_TYPE line)
       //UNITY_OUTPUT_CHAR(':');
       if (msg[0] != ' ')
       {
-        //UNITY_OUTPUT_CHAR(' ');  
+        //UNITY_OUTPUT_CHAR(' ');
       }
 	  UnityTestResultsFailBegin(line);
 	  UnityPrint("   ");
@@ -967,7 +967,7 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
 {
     Unity.CurrentTestName = FuncName;
     Unity.CurrentTestLineNumber = FuncLineNum;
-    Unity.NumberOfTests++; 
+    Unity.NumberOfTests++;
     if (TEST_PROTECT())
     {
         //set_Up();
